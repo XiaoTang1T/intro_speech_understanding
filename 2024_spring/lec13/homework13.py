@@ -1,4 +1,6 @@
-import bs4, gtts
+# homework13.py
+import bs4
+import gtts
 
 def extract_stories_from_NPR_text(text):
     '''
@@ -12,9 +14,19 @@ def extract_stories_from_NPR_text(text):
       Each story should be a tuple of (title, teaser), where the title and teaser are
       both strings.  If the story has no teaser, its teaser should be an empty string.
     '''
-    raise RuntimeError('You need to write this part!')
-    return stories
+    soup = bs4.BeautifulSoup(text, "html.parser")
+    stories = []
+    for div_tag in soup.find_all('div', class_='story-text'):
+        titletag = div_tag.find('h3', class_='title')
+        teasertag = div_tag.find('p', class_='teaser')
+        
+        title = titletag.get_text(strip=True) if titletag else ""
+        teaser = teasertag.get_text(strip=True) if teasertag else ""
+        
+        stories.append((title, teaser))
     
+    return stories
+
 def read_nth_story(stories, n, filename):
     '''
     Read the n'th story from a list of stories.
@@ -26,4 +38,9 @@ def read_nth_story(stories, n, filename):
 
     Output: None
     '''
-    raise RuntimeError('You need to write this part!')
+    if 0 <= n < len(stories):
+        story_text = stories[n][0] + " " + stories[n][1]
+        tts = gtts.gTTS(text=story_text, lang="en")  # 确保语言设置正确
+        tts.save(filename)
+    else:
+        print("Index out of range.")
